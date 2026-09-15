@@ -1,0 +1,98 @@
+ORD,SHEET,GRP,ITEM,VAL_A,VAL_B,VAL_C,TXT_A,TXT_B,TXT_C
+1,DQ Scorecard,Completeness,chargeback.resolved_at is null (still open),158,721.00,21.914,Informational,Retain - open cases are a valid business state,chargeback
+1,DQ Scorecard,Completeness,transaction.amount is null,0,260287.00,0.000,Blocking,Quarantine - cannot compute value,transaction
+1,DQ Scorecard,Completeness,transaction.customer_id is null,0,260287.00,0.000,Informational,Retain,transaction
+1,DQ Scorecard,Completeness,transaction.merchant_id is null,1768,260287.00,0.679,Warning,Retain with flag; exclude only from merchant-level breakdowns,transaction
+1,DQ Scorecard,Consistency,chargeback raised against a non-captured transaction,0,721.00,0.000,Blocking,Quarantine - a payment that never captured cannot be charged back,chargeback
+1,DQ Scorecard,Consistency,chargeback.transaction_id not found in transaction,0,721.00,0.000,Blocking,Exclude,chargeback
+1,DQ Scorecard,Consistency,settlement.transaction_id not found in transaction,447,224242.00,0.199,Blocking,Exclude and report as a reconciliation break to Finance Operations,settlement
+1,DQ Scorecard,Consistency,transaction has no CREATED lifecycle event,0,260287.00,0.000,Warning,Retain with flag - event pipeline gap,transaction
+1,DQ Scorecard,Consistency,transaction.merchant_id not found in merchant,0,260287.00,0.000,Blocking,Quarantine - orphaned merchant reference,transaction
+1,DQ Scorecard,Reconciliation,captured transaction with no settlement row,11137,233598.00,4.768,Blocking,Retain with flag and impute the fee from route_cost; excluding them biases recent months,transaction
+1,DQ Scorecard,Reconciliation,settlement value does not match transaction value in USD,3038,223795.00,1.357,Blocking,Sum settlement rows to transaction grain before reconciling,settlement
+1,DQ Scorecard,Timeliness,chargeback opened before the transaction occurred,0,721.00,0.000,Blocking,Quarantine,chargeback
+1,DQ Scorecard,Timeliness,event ingested more than 2 days after it occurred,44386,1000316.00,4.437,Warning,"Retain - use event_time for KPI periods, ingestion_time for lag reporting",payment_event
+1,DQ Scorecard,Timeliness,event_time earlier than the parent transaction created_at,0,1000316.00,0.000,Blocking,Quarantine - an event cannot precede its transaction,payment_event
+1,DQ Scorecard,Timeliness,settlement dated before the transaction occurred,0,223795.00,0.000,Blocking,Quarantine,settlement
+1,DQ Scorecard,Uniqueness,fx_rate composite key is not unique,0,2920.00,0.000,Blocking,Deduplicate,fx_rate
+1,DQ Scorecard,Uniqueness,merchant_risk_snapshot composite key is not unique,0,7200.00,0.000,Blocking,Deduplicate,merchant_risk_snapshot
+1,DQ Scorecard,Uniqueness,more than one settlement row per transaction,1334,224242.00,0.595,Blocking,Sum fee_amount to transaction grain before joining,settlement
+1,DQ Scorecard,Uniqueness,transaction_id is not unique,0,260287.00,0.000,Blocking,Deduplicate - the declared primary key must hold,transaction
+1,DQ Scorecard,Validity,fraud_decision.risk_score outside 0 to 1,176568,466451.00,37.853,Blocking,Repair - normalise by model_version before any threshold comparison,fraud_decision
+1,DQ Scorecard,Validity,fx_rate.rate_to_usd not positive,0,2920.00,0.000,Blocking,Repair from source,fx_rate
+1,DQ Scorecard,Validity,route_cost.variable_fee_pct outside 0 to 0.10,0,3285.00,0.000,Blocking,Repair from source,route_cost
+1,DQ Scorecard,Validity,transaction.amount < 0 with status CAPTURED (impossible),390,260287.00,0.150,Blocking,Quarantine - a captured payment cannot carry a negative amount,transaction
+1,DQ Scorecard,Validity,transaction.amount < 0 with status REVERSED (legitimate),1952,260287.00,0.750,Informational,"Retain - genuine reversals, net them rather than dropping",transaction
+1,DQ Scorecard,Validity,transaction.amount = 0,0,260287.00,0.000,Warning,Quarantine - zero-value attempts carry no economics,transaction
+1,DQ Scorecard,Validity,transaction.status outside the known set,0,260287.00,0.000,Blocking,Quarantine,transaction
+2,Missing merchant by channel,,BANK_TRANSFER,128,35732.00,0.358,,,
+2,Missing merchant by channel,,CARD,480,111719.00,0.430,,,
+2,Missing merchant by channel,,UPI,296,71783.00,0.412,,,
+2,Missing merchant by channel,,WALLET,864,41053.00,2.105,,,
+3,Risk score by model version,,v2.1,0,280293.00,0.000,,min 0.001  max 0.999,
+3,Risk score by model version,,v3.0,176568,186158.00,94.850,,min 0.1  max 99.9,
+4,Event lag by month,,2025-01,1931,62436.00,3.090,,max lag 9.0 days,
+4,Event lag by month,,2025-02,2168,66102.00,3.280,,max lag 9.0 days,
+4,Event lag by month,,2025-03,2411,69483.00,3.470,,max lag 9.0 days,
+4,Event lag by month,,2025-04,2511,72889.00,3.440,,max lag 9.0 days,
+4,Event lag by month,,2025-05,2815,76492.00,3.680,,max lag 9.0 days,
+4,Event lag by month,,2025-06,3035,80282.00,3.780,,max lag 9.0 days,
+4,Event lag by month,,2025-07,3495,84425.00,4.140,,max lag 9.0 days,
+4,Event lag by month,,2025-08,3935,87751.00,4.480,,max lag 9.0 days,
+4,Event lag by month,,2025-09,4328,92385.00,4.680,,max lag 9.0 days,
+4,Event lag by month,,2025-10,5133,97504.00,5.260,,max lag 9.0 days,
+4,Event lag by month,,2025-11,5760,102093.00,5.640,,max lag 9.0 days,
+4,Event lag by month,,2025-12,6541,107252.00,6.100,,max lag 9.0 days,
+4,Event lag by month,,2026-01,323,1222.00,26.430,,max lag 9.0 days,
+5,Settlement coverage by month,,2025-01,392,14802.00,2.650,,,
+5,Settlement coverage by month,,2025-02,440,15496.00,2.840,,,
+5,Settlement coverage by month,,2025-03,475,16246.00,2.920,,,
+5,Settlement coverage by month,,2025-04,433,17049.00,2.540,,,
+5,Settlement coverage by month,,2025-05,455,17903.00,2.540,,,
+5,Settlement coverage by month,,2025-06,468,18820.00,2.490,,,
+5,Settlement coverage by month,,2025-07,521,19736.00,2.640,,,
+5,Settlement coverage by month,,2025-08,547,20349.00,2.690,,,
+5,Settlement coverage by month,,2025-09,520,21458.00,2.420,,,
+5,Settlement coverage by month,,2025-10,633,22786.00,2.780,,,
+5,Settlement coverage by month,,2025-11,950,23942.00,3.970,,,
+5,Settlement coverage by month,,2025-12,5303,25011.00,21.200,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-01,87,220.00,16350.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-02,85,214.00,16725.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-03,88,230.00,17571.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-04,86,219.00,17974.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-05,89,220.00,18412.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-06,86,215.00,18783.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-07,88,227.00,19609.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-08,312,1526.00,18642.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-09,222,1410.00,19707.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-10,88,227.00,20044.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-11,87,230.00,20384.000,,,
+6,Latency by provider month,PROV_MERIDIAN,2025-12,87,217.00,20377.000,,,
+6,Latency by provider month,PROV_NORTH,2025-01,87,224.00,30558.000,,,
+6,Latency by provider month,PROV_NORTH,2025-02,86,220.00,31968.000,,,
+6,Latency by provider month,PROV_NORTH,2025-03,88,222.00,33151.000,,,
+6,Latency by provider month,PROV_NORTH,2025-04,88,224.00,34690.000,,,
+6,Latency by provider month,PROV_NORTH,2025-05,87,222.00,35874.000,,,
+6,Latency by provider month,PROV_NORTH,2025-06,87,224.00,37008.000,,,
+6,Latency by provider month,PROV_NORTH,2025-07,86,224.00,37182.000,,,
+6,Latency by provider month,PROV_NORTH,2025-08,86,223.00,37948.000,,,
+6,Latency by provider month,PROV_NORTH,2025-09,86,223.00,37718.000,,,
+6,Latency by provider month,PROV_NORTH,2025-10,88,226.00,37172.000,,,
+6,Latency by provider month,PROV_NORTH,2025-11,87,222.00,35901.000,,,
+6,Latency by provider month,PROV_NORTH,2025-12,87,224.00,34034.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-01,85,216.00,16236.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-02,87,221.00,17539.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-03,88,221.00,18771.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-04,88,219.00,20266.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-05,89,228.00,22191.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-06,87,228.00,24595.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-07,88,222.00,27572.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-08,88,223.00,31247.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-09,88,223.00,35018.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-10,87,224.00,40279.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-11,88,223.00,46039.000,,,
+6,Latency by provider month,PROV_ORBIT,2025-12,87,224.00,52781.000,,,
+7,Fan-out proof,,correct: fraud pre-aggregated,233598,2122706960.62,1.000,,,
+7,Fan-out proof,,correct: no join,233598,2122706960.62,1.000,,,
+7,Fan-out proof,,naive join to fraud decision,418561,3806303262.24,1.790,,,
+7,Fan-out proof,,naive join to risk snapshot,2784396,25295125176.60,11.920,,,

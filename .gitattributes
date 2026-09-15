@@ -1,0 +1,8 @@
+*.csv   text eol=lf
+*.sql   text eol=lf
+*.py    text eol=lf
+*.md    text eol=lf
+*.pbix  binary
+*.xlsx  binary
+*.docx  binary
+*.pptx  binary

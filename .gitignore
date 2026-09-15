@@ -1,0 +1,35 @@
+# Generated data — reproduce with 00_data_generation/generate_astrapay_data.py
+data/
+*.duckdb
+*.duckdb.wal
+
+# Answer key — must never be committed
+**/_answer_key/
+**/truth_manifest.md
+
+# Power BI
+*.pbix.bak
+.powerbi/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Secrets — nothing credential-shaped may ever be committed
+.env
+*.env
+credentials*
+*secret*
+*.key
+*.pem
+connection*.json
+model_output/
